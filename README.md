@@ -5,7 +5,7 @@ This project requires us to build a chatbot that assists job seekers in building
 This project belongs to the domain of Natural Language Processing (NLP) where we are showcasing the knowledge of Deep Learning techniques using large language models (LLM) in creating a chatbot that can assist per our needs.
 
 ## Pre-requisites:
-* • A Google account to access Google Colab.
-* • Basic understanding of Python programming.
-* • Internet connectivity for package installations and model downloads.
+* A Google account to access Google Colab.
+* Basic understanding of Python programming.
+* Internet connectivity for package installations and model downloads.
 
