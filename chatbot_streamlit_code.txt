@@ -1,0 +1,54 @@
+import streamlit as st
+import transformers
+import torch
+
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+
+@st.cache_resource
+def load_model():
+  return transformers.pipeline(
+    "text-generation",
+    model=model_id,
+    model_kwargs={"torch_dtype": torch.bfloat16, "load_in_4bit": True}
+    )
+
+pipeline = load_model()
+
+messages = [
+  {"role": "system", "content": "You are an AI assistant capable of performing multiple tasks. Based on the input, you should identify whether to generate a resume, create an email letter, or generate/answer interview questions."},
+]
+
+st.title("AI Assistant with Meta LLaMA 3")
+
+user_input = st.text_input("Ask a question or describe a task:")
+
+if st.button("Submit"):
+  if user_input.lower() == "exit":
+    st.write("Session finalized.")
+  else:
+    messages.append({"role": "user", "content": user_input})
+    
+    prompt = pipeline.tokenizer.apply_chat_template(
+      messages,
+      tokenize=False,
+      add_generation_prompt=True
+    )
+      
+    terminators = [
+      pipeline.tokenizer.eos_token_id,
+      pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+    ]
+      
+    outputs = pipeline(
+      prompt,
+      max_new_tokens=2000,
+      eos_token_id=terminators,
+      do_sample=True,
+      temperature=0.6,
+      top_p=0.9,
+    )
+      
+    response = outputs[0]["generated_text"][len(prompt):]
+    st.write(f"Answer: {response}")
+    
+    messages.append({"role": "assistant", "content": response})
